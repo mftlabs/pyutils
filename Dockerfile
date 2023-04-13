@@ -12,11 +12,12 @@ RUN pip3.8 install --upgrade wheel
 RUN pip3.8 install --upgrade pyyaml
 RUN pip3.8 install --upgrade requests
 RUN pip3.8 install --upgrade jinja2
-RUN pip3.8 install --upgrade pysftp
 RUN pip3.8 install --upgrade attrdict
 RUN yum install gtk3-devel -y
 RUN yum install which -y
 RUN pip3.8 install --upgrade pytz
+RUN pip3.8 install --upgrade paramiko
+RUN pip3.8 install --upgrade pysftp
 RUN pip3.8 install --upgrade robotframework
 RUN pip3.8 install --upgrade robotframework-sshlibrary
 RUN pip3.8 install --upgrade robotframework-seleniumlibrary
@@ -28,6 +29,9 @@ RUN pip3.8 install --upgrade robotframework-jsonlibrary
 RUN pip3.8 install --upgrade httplib2
 RUN pip3.8 install --upgrade beautifulsoup4
 RUN pip3.8 install --upgrade splinter
+RUN pip3.8 install --upgrade python-ldap
+RUN pip3.8 install --upgrade cx_oracle
+RUN pip3.8 install --upgrade db2
 RUN pip3.8 install --upgrade automagica
 RUN useradd -u 1010 mftadmin && usermod -aG wheel mftadmin
 RUN echo "mftadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
