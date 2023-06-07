@@ -29,7 +29,7 @@ RUN pip3.8 install --upgrade robotframework-jsonlibrary
 RUN pip3.8 install --upgrade httplib2
 RUN pip3.8 install --upgrade beautifulsoup4
 RUN pip3.8 install --upgrade splinter
-RUN pip3.8 install --upgrade python-ldap
+#RUN pip3.8 install --upgrade python-ldap
 RUN pip3.8 install --upgrade cx_oracle
 RUN pip3.8 install --upgrade db2
 RUN pip3.8 install --upgrade automagica
