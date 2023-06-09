@@ -6,7 +6,7 @@ RUN yum -y install sudo epel-release; yum clean all
 #RUN yum -y install python3-dev libsasl2-dev libldap2-dev libssl-dev
 RUN  yum install -y net-tools wget perl-core zlib-devel wget && yum -y groups mark install "Development Tools" && yum -y groups mark convert "Development Tools" && yum -y groupinstall "Development Tools" && yum install -y openssl-devel && yum install -y libffi-devel && yum clean all
 RUN wget https://www.python.org/ftp/python/3.9.17/Python-3.9.17.tgz && tar -xvf Python-3.9.17.tgz && cd Python-3.9.17 && ./configure --enable-optimizations && make altinstall && cd .. && rm -rf Python-3.9.17.tgz && rm -rf Python-3.9.17
-RUN wget https://bootstrap.pypa.io/get-pip.py && python3.9.17 get-pip.py && rm -rf get-pip.py
+RUN wget https://bootstrap.pypa.io/get-pip.py && python3.9 get-pip.py && rm -rf get-pip.py
 RUN pip3.9 install --upgrade pip
 RUN pip3.9 install --upgrade setuptools
 RUN pip3.9 install --upgrade wheel
