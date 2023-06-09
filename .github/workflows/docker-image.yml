@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "Python-3.9.17" ]
 
 jobs:
 
@@ -32,7 +32,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pyutils:${{ github.sha }},${{ secrets.DOCKER_HUB_USERNAME }}/pyutils:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pyutils:${{ github.sha }},${{ secrets.DOCKER_HUB_USERNAME }}/pyutils:python-3.9.17
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
           
