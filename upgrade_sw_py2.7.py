@@ -23,7 +23,7 @@ class SoftwareUpgrade:
         softwarepath = args.softwarepath
         backupdir = args.backupdir
         alternate_tempfolder = args.alternate_tempfolder
-        if swtype == "sspcm":
+        if swtype == "sspcm" or swtype == "ssp":
             os.environ['IATEMPDIR'] = alternate_tempfolder
             os.environ['TEMPDIR'] = alternate_tempfolder
         now = datetime.now()
