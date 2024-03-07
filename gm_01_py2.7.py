@@ -106,7 +106,11 @@ class GMSoftwareUpgrade:
         
         shutil.copy2(os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"), os.path.join(reaper_conf_dir, "cassandra-reaper.yaml_{}_patchfile.bkp".format(self.now)))  
         
-        shutil.copy2(os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.backuptime)), os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"))
+        file = os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.backuptime))
+        pos1 = file_name.find('_')
+        pos2 = file_name.find('.',pos1)
+        source_file_name = file_name[:pos1] + file_name[pos2:]
+        shutil.copy2(source_file_name, os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"))
         
 
     def start_gm(self):
