@@ -33,10 +33,10 @@ class gm:
         logging.info('Starting Upgrade of {} at:{}'.format(swtype, self.now))
         logging.info('Backup Directory:{}'.format(self.backupdir))
         logging.info('Installation Directory:{}'.format(installation_dir))
-        self.stop_gm()
+        self.stop()
         self.backup()
         self.upgrade()
-        self.start_gm()
+        self.start()
 
     def stop(self):
         subprocess.call(["amf", "stop", "gm"])
