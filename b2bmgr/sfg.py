@@ -29,14 +29,14 @@ class sfg:
         self.homedir = os.environ.get('HOME')
         log_filename = os.path.join(self.backupdir, 'b2bmgr_{}_{}_{}.log'.format(self.swtype, self.action, self.now))
         logging.basicConfig(filename=log_filename, filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
-    # def run(self, args):
-    #     installation_dir = args.installdir
-    #     backupdir = args.backupdir
-    #     self.stop()
-    #     self.backup(installation_dir, backupdir)
-    #     self.upgrade(installation_dir, backupdir)
-    #     self.start()
+ 
+    def run(self, args):
+        installation_dir = args.installdir
+        backupdir = args.backupdir
+        self.stop()
+        self.backup()
+        self.upgrade()
+        self.start()
 
         # logging.info('Starting Upgrade of {} at:{}'.format(swtype, now))
         # logging.info('Backup Directory:{}'.format(backupdir))
