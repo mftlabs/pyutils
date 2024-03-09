@@ -26,17 +26,17 @@ class gm:
         log_filename = os.path.join(self.backupdir, 'b2bmgr_{}_{}_{}.log'.format(self.swtype, self.action, self.now))
         logging.basicConfig(filename=log_filename, filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # def run(self, args):
-    #     installation_dir = args.installdir
-    #     now = datetime.now()
-    #     timestamp = now.strftime("%Y%m%d%H%M%S") 
-    #     logging.info('Starting Upgrade of {} at:{}'.format(swtype, self.now))
-    #     logging.info('Backup Directory:{}'.format(self.backupdir))
-    #     logging.info('Installation Directory:{}'.format(installation_dir))
-    #     self.stop_gm()
-    #     self.backup()
-    #     self.upgrade()
-    #     self.start_gm()
+    def run(self, args):
+        installation_dir = args.installdir
+        now = datetime.now()
+        timestamp = now.strftime("%Y%m%d%H%M%S") 
+        logging.info('Starting Upgrade of {} at:{}'.format(swtype, self.now))
+        logging.info('Backup Directory:{}'.format(self.backupdir))
+        logging.info('Installation Directory:{}'.format(installation_dir))
+        self.stop_gm()
+        self.backup()
+        self.upgrade()
+        self.start_gm()
 
     def stop(self):
         subprocess.call(["amf", "stop", "gm"])
