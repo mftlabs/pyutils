@@ -43,7 +43,7 @@ class B2BManager(object):
             elif self.action == 'restore':
                 app.restore_with_cleanup_timestamp()
             elif self.action == 'run':
-                app.run(self.args)
+                app.run()
             else:
                 print("Invalid action. Please verify!")
                 return
