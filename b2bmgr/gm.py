@@ -38,15 +38,15 @@ class gm:
         
         logging.info("About to start backup process of {}".format(self.swtype))
         self.backup()
-        logging.info("Completed {} backup".format(self.swtype))
+        logging.info("Completed {} backup process".format(self.swtype))
         
         logging.info("About to start upgrade process of {}".format(self.swtype))
         self.upgrade()
-        logging.info("Completed {} upgrade".format(self.swtype))
+        logging.info("Completed {} upgrade process".format(self.swtype))
         
         logging.info("About to start restore process of {}".format(self.swtype))
         self.restore_with_cleanup_timestamp()
-        logging.info("Completed {} upgrade".format(self.swtype))
+        logging.info("Completed {} restore process".format(self.swtype))
         
         logging.info("About to start {}".format(self.swtype))
         self.start()
@@ -61,6 +61,8 @@ class gm:
 
     def backup(self):
         reaper_conf_dir = os.path.join(self.installation_dir, "apache-cassandra", "reaper", "conf")
+
+        logging.info("Backup of {} is getting created in {} as {}".format(os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"), self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.now)))
         shutil.copy2(os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"), os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.now)))
 
         netstat_output = subprocess.check_output("netstat -an | grep 2181 | grep TIME_WAIT | wc -l", shell=True)
@@ -77,12 +79,16 @@ class gm:
 
         if zerocountflag:
             for directory in ["ZOO", "CAS"]:
+                logging.info("Backup of {} is getting created in {} as {}".format(os.path.join(self.installation_dir, directory), self.backupdir, '{}_{}'.format(directory, self.now)))
                 self.tar_and_copy_folder(os.path.join(self.installation_dir, directory), self.backupdir, '{}_{}'.format(directory, self.now))
-                
+
+            logging.info("Backup of {} is getting created in {} as {}".format(self.appdatadir, self.backupdir, '{}_{}'.format("appData", self.now)))    
             self.tar_and_copy_folder(self.appdatadir, self.backupdir, '{}_{}'.format("appData", self.now))
             
+            logging.info("Backup of {} is getting created in {} as {}".format(self.ibmimsharedpath, self.backupdir, '{}_{}'.format("IBMIMShared", self.now)))
             self.tar_and_copy_folder(self.ibmimsharedpath, self.backupdir, '{}_{}'.format("IBMIMShared", self.now))  
             
+            logging.info("Backup of {} is getting created in {} as {}".format(self.installation_dir, self.backupdir, '{}_{}'.format("gm", self.now)))
             self.tar_and_copy_folder(self.installation_dir, self.backupdir, '{}_{}'.format("gm", self.now))
             
     def upgrade(self):
@@ -100,6 +106,8 @@ class gm:
 
     def restore_with_cleanup_timestamp(self):
         reaper_conf_dir = os.path.join(self.installation_dir, "apache-cassandra", "reaper", "conf")
+
+        logging.info("Backup of {} is getting created in {} as patchfile {}".format(os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"), reaper_conf_dir, "cassandra-reaper.yaml_{}_patchfile.bkp".format(self.now)))
         shutil.copy2(os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"), os.path.join(reaper_conf_dir, "cassandra-reaper.yaml_{}_patchfile.bkp".format(self.now)))
         
         if self.action == run:
@@ -108,6 +116,7 @@ class gm:
 +        else:
 +            source_file_name = os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.backuptime))
 
+        logging.info("Restoring {} to {} as {}".format(source_file_name, reaper_conf_dir, "cassandra-reaper.yaml"))
         shutil.copy2(source_file_name, os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"))
 
     def start(self):

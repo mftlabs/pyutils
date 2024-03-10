@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import sys
 import subprocess
 from datetime import datetime
 import tarfile
@@ -35,22 +36,22 @@ class sfg:
         logging.info('Starting Upgrade of {} at:{}'.format(self.swtype, self.now))
         logging.info('Installation Directory:{}'.format(self.installation_dir))
         logging.info('Backup Directory:{}'.format(self.backupdir))
-        
+
         logging.info("About to stop {}".format(self.swtype))
         self.stop()
         logging.info("Completed {} stop".format(self.swtype))
         
         logging.info("About to start backup process of {}".format(self.swtype))
         self.backup()
-        logging.info("Completed {} backup".format(self.swtype))
+        logging.info("Completed {} backup process".format(self.swtype))
         
         logging.info("About to start upgrade process of {}".format(self.swtype))
         self.upgrade()
-        logging.info("Completed {} upgrade".format(self.swtype))
+        logging.info("Completed {} upgrade process".format(self.swtype))
         
         logging.info("About to start restore process of {}".format(self.swtype))
         self.restore_with_cleanup_timestamp()
-        logging.info("Completed {} upgrade".format(self.swtype))
+        logging.info("Completed {} restore process".format(self.swtype))
         
         logging.info("About to start {}".format(self.swtype))
         self.start()
@@ -98,20 +99,59 @@ class sfg:
             "cdinterop-spoe-policy_{}.properties.in".format(self.now)
         ]
         for file_name in files_to_backup:
+            logging.info("backup of {} is getting created in {} as {}".format(os.path.join(properties_folder, file_name), self.backupdir, backupfiles[files_to_backup.index(file_name)]))
             shutil.copy2(os.path.join(properties_folder, file_name), os.path.join(self.backupdir, backupfiles[files_to_backup.index(file_name)]))
 
         home_dir = self.homedir
         home_dir_formatted = home_dir.replace('/','_')
         
-        self.create_tar_archive(self.installation_dir, "{}/{}_opt_B2B_sys_{}.tar.gz".format(self.backupdir, self.hostname, self.now), exclude_folders=['logs','backups']),
-        self.create_tar_archive(self.appdatadir, "{}/{}_opt_B2B_appData_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now)),
-        self.create_tar_archive(self.ibmimsharedpath, "{}/{}_opt_B2B_IBMIMShared_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now)),
-        
-        self.create_tar_archive(self.IBM, "{}/{}_opt_B2B_IBM_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now)),
-        self.create_tar_archive(self.ibm, "{}/{}_opt_B2B_ibm_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now)),
+        if self.installation_dir:
+            logging.info("backup of {} is getting created in {} as {}_opt_B2B_sys_{}.tar.gz".format(self.installation_dir, self.backupdir, self.hostname, self.now))
+            self.create_tar_archive(self.installation_dir, "{}/{}_opt_B2B_sys_{}.tar.gz".format(self.backupdir, self.hostname, self.now), exclude_folders=['logs','backups'])
+        else:
+            logging.info("No installdir provided, aborting...")
+            print("No installdir provided, aborting...")
+            sys.exit(1)
 
-        self.create_tar_archive(os.path.join(home_dir, "etc"), "{}/{}_{}_etc_{}.sys.tar.gz".format(self.backupdir, self.hostname, home_dir_formatted, self.now)),
-        self.create_tar_archive(os.path.join(home_dir, "var"), "{}/{}_{}_var_{}.sys.tar.gz".format(self.backupdir, self.hostname, home_dir_formatted, self.now))
+        if self.appdatadir:
+            logging.info("backup of {} is getting created in {} as {}_opt_B2B_appData_{}.sys.tar.gz".format(self.appdatadir, self.backupdir, self.hostname, self.now))
+            self.create_tar_archive(self.appdatadir, "{}/{}_opt_B2B_appData_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now))
+        else:
+            logging.info("No appdatadir provided, aborting...")
+            print("No appdatadir provided, aborting...")
+            sys.exit(2)
+        
+        if self.ibmimsharedpath:
+            logging.info("backup of {} is getting created in {} as {}_opt_B2B_IBMIMShared_{}.sys.tar.gz".format(self.ibmimsharedpath, self.backupdir, self.hostname, self.now))
+            self.create_tar_archive(self.ibmimsharedpath, "{}/{}_opt_B2B_IBMIMShared_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now))
+        else:
+            logging.info("No ibmimsharedpath provided, aborting...")
+            print("No ibmimsharedpath provided, aborting...")
+            sys.exit(3)
+
+        if self.IBM:
+            logging.info("Backup of {} is getting created in {} as {}_opt_B2B_IBM_{}.sys.tar.gz".format(self.IBM, self.backupdir, self.hostname, self.now))
+            self.create_tar_archive(self.IBM, "{}/{}_opt_B2B_IBM_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now))
+        else:
+            logging.info("No IBM provided, proceeding further without backup of IBM")
+
+        if self.ibm:
+            logging.info("Backup of {} is getting created in {} as {}_opt_B2B_ibm_{}.sys.tar.gz".format(self.ibm, self.backupdir, self.hostname, self.now))
+            self.create_tar_archive(self.ibm, "{}/{}_opt_B2B_ibm_{}.sys.tar.gz".format(self.backupdir, self.hostname, self.now))
+        else:
+            logging.info("No ibm provided, proceeding further without backup of ibm")
+
+        if "etc" in os.listdir(home_dir):    
+            logging.info("Backup of {} is getting created in {} as {}_{}_etc_{}.sys.tar.gz".format(os.path.join(home_dir, "etc"), self.backupdir, self.hostname, home_dir_formatted, self.now))
+            self.create_tar_archive(os.path.join(home_dir, "etc"), "{}/{}_{}_etc_{}.sys.tar.gz".format(self.backupdir, self.hostname, home_dir_formatted, self.now))
+        else:
+            logging.info("etc not present in {}, proceeding further without backup of etc".format(home_dir))
+        
+        if "var" in os.listdir(home_dir):
+            logging.info("Backup of {} is getting created in {} as {}_{}_var_{}.sys.tar.gz".format(os.path.join(home_dir, "var"), self.backupdir, self.hostname, home_dir_formatted, self.now))
+            self.create_tar_archive(os.path.join(home_dir, "var"), "{}/{}_{}_var_{}.sys.tar.gz".format(self.backupdir, self.hostname, home_dir_formatted, self.now))
+        else:
+            logging.info("var not present in {}, proceeding further without backup of var".format(home_dir))
 
     def upgrade(self):
         sandbox_config = os.path.join(self.installation_dir, "properties", "sandbox.cfg")
@@ -123,6 +163,7 @@ class sfg:
                 if "JCE_DIST_FILE" not in line:  
                     file.write(line)
                 else:
+                    logging.info("Removed {} from {}".format("JCE_DIST_FILE", sandbox_config))
                     continue
 
         subprocess.call([
@@ -159,6 +200,7 @@ class sfg:
             pos1 = file_name.find('_')
             pos2 = file_name.find('.',pos1)
             source_file_name = file_name[:pos1] + file_name[pos2:]
+            logging.info("Restoring {} to {} as {}".format(os.path.join(self.backupdir, file_name), properties_folder, source_file_name))
             shutil.copy2(os.path.join(self.backupdir, file_name), os.path.join(properties_folder, source_file_name))
 
         subprocess.call(["sh", self.uiupdatescript])
