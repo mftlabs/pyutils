@@ -15,7 +15,7 @@ class sfg:
         self.swtype = args.swtype
         self.installation_dir = args.installdir
         self.backupdir = args.backupdir
-        self.imdir = args.imdir
+        self.imcldir = args.imcldir
         self.responsefilepath = args.responsefilepath
         self.appdatadir = args.appdatadir
         self.ibmimsharedpath = args.ibmimsharedpath
@@ -31,22 +31,30 @@ class sfg:
         logging.basicConfig(filename=log_filename, filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
  
     def run(self, args):
-        installation_dir = args.installdir
-        backupdir = args.backupdir
+
+        logging.info('Starting Upgrade of {} at:{}'.format(self.swtype, self.now))
+        logging.info('Installation Directory:{}'.format(self.installation_dir))
+        logging.info('Backup Directory:{}'.format(self.backupdir))
+        
+        logging.info("About to stop {}".format(self.swtype))
         self.stop()
+        logging.info("Completed {} stop".format(self.swtype))
+        
+        logging.info("About to start backup process of {}".format(self.swtype))
         self.backup()
+        logging.info("Completed {} backup".format(self.swtype))
+        
+        logging.info("About to start upgrade process of {}".format(self.swtype))
         self.upgrade()
+        logging.info("Completed {} upgrade".format(self.swtype))
+        
+        logging.info("About to start restore process of {}".format(self.swtype))
+        self.restore_with_cleanup_timestamp()
+        logging.info("Completed {} upgrade".format(self.swtype))
+        
+        logging.info("About to start {}".format(self.swtype))
         self.start()
-
-        # logging.info('Starting Upgrade of {} at:{}'.format(swtype, now))
-        # logging.info('Backup Directory:{}'.format(backupdir))
-        # logging.info('Installation Directory:{}'.format(installation_dir))
-
-        # self.stop_sfg()
-        # self.backup(installation_dir, backupdir)
-        # self.upgrade(installation_dir, backupdir)
-        # self.restore(installation_dir, backupdir)
-        # self.start_sfg()
+        logging.info("Completed {} start".format(self.swtype))
 
     def stop(self):
         subprocess.call(["amf", "stop", "sfg"])
@@ -55,8 +63,8 @@ class sfg:
         return len(os.listdir(directory_path)) == 0
 
     def create_tar_archive(self, source_folder, destination_file, exclude_folders=None):
+        
         fileslist = []
-        dirslist = []
         with tarfile.open(destination_file, "w:gz") as tar:
             for root, dirs, files in os.walk(source_folder):
                 # Exclude top-level directories specified in exclude_dirs
@@ -118,8 +126,7 @@ class sfg:
                     continue
 
         subprocess.call([
-            
-            self.imdir+"/imcl", 
+            self.imcldir+"/imcl", 
             "-input", self.responsefilepath,
             "-dataLocation", self.appdatadir,
             "-log", self.log,
@@ -136,11 +143,18 @@ class sfg:
 
     def restore_with_cleanup_timestamp(self):
         properties_folder = os.path.join(self.installation_dir, "properties")
-        files_to_restore = [
-            "cdinterop-spoe-auth_{}.properties".format(self.backuptime),
-            "cdinterop-spoe-policy_{}.properties".format(self.backuptime),
-            "cdinterop-spoe-policy_{}.properties.in".format(self.backuptime)
-        ]
+        if self.action == run:
++            files_to_restore = [
++                "cdinterop-spoe-auth_{}.properties".format(self.now),
++                "cdinterop-spoe-policy_{}.properties".format(self.now),
++                "cdinterop-spoe-policy_{}.properties.in".format(self.now)
++            ]
++        else:
++            files_to_restore = [
++                "cdinterop-spoe-auth_{}.properties".format(self.backuptime),
++                "cdinterop-spoe-policy_{}.properties".format(self.backuptime),
++                "cdinterop-spoe-policy_{}.properties.in".format(self.backuptime)
++            ]
         for file_name in files_to_restore:
             pos1 = file_name.find('_')
             pos2 = file_name.find('.',pos1)

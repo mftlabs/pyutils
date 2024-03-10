@@ -12,7 +12,7 @@ class B2BManager(object):
         self.action = args.action.lower()
         self.installdir = args.installdir
         self.backupdir = args.backupdir
-        self.imdir = args.imdir
+        self.imcldir = args.imcldir
         self.responsefilepath = args.responsefilepath
         self.appdatadir = args.appdatadir
         self.ibmimsharedpath = args.ibmimsharedpath
@@ -49,13 +49,13 @@ class B2BManager(object):
                 return
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='This is a script to automate the B2B upgrade process.')
+    parser = argparse.ArgumentParser(description='This is a script to upgrade GM/B2Bi.')
     parser.add_argument('-action', help='Action to be performed')
-    parser.add_argument('-swtype', help='Action to be performed')
+    parser.add_argument('-swtype', help='Software type')
     
     parser.add_argument('-installdir', help='The installation directory of the B2B product')
     parser.add_argument('-backupdir', help='The directory where the backup files are located')
-    parser.add_argument('-imdir', help='The path to the Installation Manager')
+    parser.add_argument('-imcldir', help='The path to the Installation Manager')
     parser.add_argument('-responsefilepath', help='The path to the response file')
     parser.add_argument('-appdatadir', help='The path to the appData directory')
     parser.add_argument("-ibmimsharedpath", type=str, help="IBMIMSHARED Path")

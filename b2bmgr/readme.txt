@@ -19,16 +19,16 @@ BACKUP
 UPGRADE
 	
     FOR GM
-    
-		./b2bmgr.py -swtype gm -action upgrade -installdir <GMINSTALLDIR> -imdir <INSTALLATIONMANAGERDIR> -responsefilepath <RESPONSEFILEPATH>  -appdatadir <APPDATADIR> -log <LOG>
 
-		./b2bmgr.py -swtype gm -action upgrade -installdir /apps/ibm/gm -imdir apps/ibm/sw/sourcefiles/SFG/InstallationManager/IM_Linux/tools -responsefilepath /apps/ibm/sw/sourcefiles/CASS_RES.xml  -appdatadir /apps/ibm/data -log /apps/ibm/backup
+		./b2bmgr.py -swtype gm -action upgrade -installdir <GMINSTALLDIR> -imcldir <imcl PATH> -responsefilepath <RESPONSEFILEPATH>  -appdatadir <APPDATADIR> -log <LOG>
+
+		./b2bmgr.py -swtype gm -action upgrade -installdir /apps/ibm/gm -imcldir apps/ibm/sw/sourcefiles/SFG/InstallationManager/IM_Linux/tools -responsefilepath /apps/ibm/sw/sourcefiles/CASS_RES.xml  -appdatadir /apps/ibm/data -log /apps/ibm/backup
 
 	FOR SFG
 	
-		./b2bmgr.py -swtype sfg -action upgrade -installdir <SFGINSTALLDIR> -imdir <INSTALLATIONMANAGERDIR> -responsefilepath <RESPONSEFILEPATH> -appdatadir <APPDATADIR> -jar <B2BAPIJARPATH> -log <LOG>                  
+		./b2bmgr.py -swtype sfg -action upgrade -installdir <SFGINSTALLDIR> -imcldir <imcl PATH> -responsefilepath <RESPONSEFILEPATH> -appdatadir <APPDATADIR> -jar <B2BAPIJARPATH> -log <LOG>                  
 		
-		./b2bmgr.py -swtype sfg -action upgrade -installdir /apps/ibm/sfg -imdir /apps/ibm/sw/sourcefiles/SFG/InstallationManager/IM_Linux/tools -responsefilepath /apps/ibm/sw/sourcefiles/SFG_RES.xml -appdatadir /apps/ibm/data -jar /apps/ibm/sw/SFG/packages/ -log /apps/ibm/backup                  
+		./b2bmgr.py -swtype sfg -action upgrade -installdir /apps/ibm/sfg -imcldir /apps/ibm/sw/sourcefiles/SFG/InstallationManager/IM_Linux/tools -responsefilepath /apps/ibm/sw/sourcefiles/SFG_RES.xml -appdatadir /apps/ibm/data -jar /apps/ibm/sw/SFG/packages/ -log /apps/ibm/backup                  
 
 
 RESTORE
@@ -44,3 +44,9 @@ RESTORE
 		./b2bmgr.py -swtype sfg -action restore -installdir <SFGINSTALLDIR> -backupdir <BACKUPDIR> -backuptime <TIMEOFBACKUPFORRESTORING> -uiupdatescript <UIUPDATESCRIPT>
 		
 		./b2bmgr.py -swtype sfg -action restore -installdir /apps/ibm/sfg -backupdir /apps/ibm/backup -backuptime 20240309160549 -uiupdatescript /opt/B2B_Shared/c7r7ff/IMA/modifySFG-UI.sh
+
+RUN
+
+    FOR GM
+
+        ./b2bmgr.py -swtype gm -action run -installdir <GMINSTALLDIR> -backupdir <BACKUPDIR> -imcldir <imcl PATH> -responsefilepath <RESPONSEFILEPATH> -appdatadir <APPDATADIR> -ibmimsharedpath <IBMIMSHAREDPATH> -log <LOG>

@@ -14,7 +14,7 @@ class gm:
         self.action = args.action.lower()
         self.swtype = args.swtype
         self.backupdir = args.backupdir
-        self.imdir = args.imdir
+        self.imcldir = args.imcldir
         self.backuptime = args.backuptime
         self.responsefilepath = args.responsefilepath
         self.appdatadir = args.appdatadir
@@ -27,16 +27,30 @@ class gm:
         logging.basicConfig(filename=log_filename, filemode='w', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
     def run(self, args):
-        installation_dir = args.installdir
-        now = datetime.now()
-        timestamp = now.strftime("%Y%m%d%H%M%S") 
-        logging.info('Starting Upgrade of {} at:{}'.format(swtype, self.now))
+        logging.info('Starting Upgrade of {} at:{}'.format(self.swtype, self.now))
+        logging.info('Installation Directory:{}'.format(self.installation_dir))
         logging.info('Backup Directory:{}'.format(self.backupdir))
-        logging.info('Installation Directory:{}'.format(installation_dir))
+        
+
+        logging.info("About to stop {}".format(self.swtype))
         self.stop()
+        logging.info("Completed {} stop".format(self.swtype))
+        
+        logging.info("About to start backup process of {}".format(self.swtype))
         self.backup()
+        logging.info("Completed {} backup".format(self.swtype))
+        
+        logging.info("About to start upgrade process of {}".format(self.swtype))
         self.upgrade()
+        logging.info("Completed {} upgrade".format(self.swtype))
+        
+        logging.info("About to start restore process of {}".format(self.swtype))
+        self.restore_with_cleanup_timestamp()
+        logging.info("Completed {} upgrade".format(self.swtype))
+        
+        logging.info("About to start {}".format(self.swtype))
         self.start()
+        logging.info("Completed {} start".format(self.swtype))
 
     def stop(self):
         subprocess.call(["amf", "stop", "gm"])
@@ -67,12 +81,12 @@ class gm:
                 
             self.tar_and_copy_folder(self.appdatadir, self.backupdir, '{}_{}'.format("appData", self.now))
             
-            self.tar_and_copy_folder(os.path.join(self.ibmimsharedpath,"IBMIMShared"), self.backupdir, '{}_{}'.format("IBMIMShared", self.now))  
+            self.tar_and_copy_folder(self.ibmimsharedpath, self.backupdir, '{}_{}'.format("IBMIMShared", self.now))  
             
             self.tar_and_copy_folder(self.installation_dir, self.backupdir, '{}_{}'.format("gm", self.now))
             
     def upgrade(self):
-        os.chdir(self.imdir)
+        os.chdir(self.imcldir)
         subprocess.call(["./imcl", "listInstalledPackages", "-verbose"])
         subprocess.call([
             "./imcl",
@@ -88,7 +102,11 @@ class gm:
         reaper_conf_dir = os.path.join(self.installation_dir, "apache-cassandra", "reaper", "conf")
         shutil.copy2(os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"), os.path.join(reaper_conf_dir, "cassandra-reaper.yaml_{}_patchfile.bkp".format(self.now)))
         
-        source_file_name = os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.backuptime))
+        if self.action == run:
++            source_file_name = os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.now))
++        
++        else:
++            source_file_name = os.path.join(self.backupdir, "cassandra-reaper.yaml_{}.bkp".format(self.backuptime))
 
         shutil.copy2(source_file_name, os.path.join(reaper_conf_dir, "cassandra-reaper.yaml"))
 
